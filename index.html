@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viatge Ètic — Viatja amb consciència</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F5F0;
+      --white: #FFFFFF;
+      --text: #1A1A18;
+      --muted: #6B6960;
+      --border: #E0DDD5;
+      --green: #2D6A4F;
+      --green-light: #D8F3DC;
+      --amber: #92400E;
+      --amber-light: #FEF3C7;
+      --red: #991B1B;
+      --red-light: #FEE2E2;
+      --accent: #2D6A4F;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--text);
+    }
+
+    header span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* Step indicator */
+    .steps {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--white);
+      transition: all 0.3s;
+    }
+    .step-dot.active {
+      border-color: var(--green);
+      background: var(--green);
+      color: white;
+    }
+    .step-dot.done {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green);
+    }
+    .step-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+    .step-line.done { background: var(--green); }
+    .step-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-left: 0.5rem;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+    }
+    .card-head {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .card-body { padding: 1.25rem; }
+
+    /* Inputs */
+    input[type=text] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin-bottom: 0.75rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type=text]:focus { border-color: var(--green); }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 0.85rem;
+      border-radius: 10px;
+      border: 1.5px solid var(--text);
+      background: var(--text);
+      color: var(--white);
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      margin-bottom: 1.25rem;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { background: var(--bg); }
+
+    /* Badges */
+    .badge {
+      font-size: 0.7rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    .badge-green { background: var(--green-light); color: var(--green); }
+    .badge-amber { background: var(--amber-light); color: var(--amber); }
+    .badge-red { background: var(--red-light); color: var(--red); }
+    .badge-gray { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+
+    /* Transport items */
+    .transport-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.6rem;
+      background: var(--white);
+    }
+    .transport-item.best {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+    .transport-item.best .transport-name { color: var(--green); }
+    .transport-item.best .transport-desc { color: #1B4332; }
+    .transport-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; }
+    .transport-name { font-weight: 500; font-size: 0.95rem; }
+    .transport-meta { display: flex; gap: 1rem; margin-bottom: 0.3rem; }
+    .transport-meta span { font-size: 0.75rem; color: var(--muted); }
+    .transport-desc { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+
+    /* Conflicts */
+    .conflict {
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+    .conflict.high { background: var(--red-light); border: 1px solid #FCA5A5; }
+    .conflict.med { background: var(--amber-light); border: 1px solid #FCD34D; }
+    .conflict.low { background: var(--green-light); border: 1px solid #6EE7B7; }
+    .conflict-title { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; }
+    .conflict.high .conflict-title { color: var(--red); }
+    .conflict.med .conflict-title { color: var(--amber); }
+    .conflict.low .conflict-title { color: var(--green); }
+    .conflict-desc { font-size: 0.78rem; line-height: 1.5; }
+    .conflict.high .conflict-desc { color: #7F1D1D; }
+    .conflict.med .conflict-desc { color: #78350F; }
+    .conflict.low .conflict-desc { color: #1B4332; }
+
+    /* Verdict */
+    .verdict {
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .verdict.si { background: var(--green-light); border: 1px solid #6EE7B7; }
+    .verdict.amb { background: var(--amber-light); border: 1px solid #FCD34D; }
+    .verdict.no { background: var(--red-light); border: 1px solid #FCA5A5; }
+    .verdict-title { font-family: 'DM Serif Display', serif; font-size: 1.2rem; font-weight: 400; margin-bottom: 0.4rem; }
+    .verdict.si .verdict-title { color: var(--green); }
+    .verdict.amb .verdict-title { color: var(--amber); }
+    .verdict.no .verdict-title { color: var(--red); }
+    .verdict-text { font-size: 0.85rem; line-height: 1.6; }
+    .verdict.si .verdict-text { color: #1B4332; }
+    .verdict.amb .verdict-text { color: #78350F; }
+    .verdict.no .verdict-text { color: #7F1D1D; }
+
+    /* Infobox */
+    .infobox {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Section label */
+    .slabel {
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      display: block;
+      margin: 1.25rem 0 0.6rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .slabel:first-child { margin-top: 0; }
+
+    /* Tabs */
+    .tab-row { display: flex; gap: 0.3rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .tab {
+      padding: 0.4rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      color: var(--muted);
+      background: var(--white);
+      transition: all 0.2s;
+    }
+    .tab.on {
+      background: var(--text);
+      color: var(--white);
+      border-color: var(--text);
+    }
+    .panel { display: none; }
+    .panel.on { display: block; }
+
+    /* Rules */
+    .rule {
+      display: flex;
+      gap: 0.7rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      align-items: flex-start;
+    }
+    .rule:last-child { border-bottom: none; }
+    .rdot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+    /* Acc items */
+    .acc-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      margin-bottom: 0.6rem;
+      background: var(--white);
+    }
+    .acc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem; }
+    .acc-name { font-size: 0.9rem; font-weight: 500; }
+    .acc-why { font-size: 0.78rem; color: var(--muted); line-height: 1.45; }
+
+    /* Loading */
+    .loading {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .da { display: inline-block; animation: blink 1.2s ease-in-out infinite; }
+    .da:nth-child(2){animation-delay:.2s}.da:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+
+    /* Error */
+    .err {
+      background: var(--red-light);
+      border: 1px solid #FCA5A5;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.85rem;
+      color: var(--red);
+      line-height: 1.5;
+      margin-top: 0.75rem;
+    }
+
+    /* Steps visibility */
+    .step { display: none; }
+    .step.on { display: block; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Viatge Ètic</h1>
+  <span>Viatja amb consciència</span>
+</header>
+
+<div class="container">
+
+  <!-- Step indicator -->
+  <div class="steps">
+    <div class="step-dot active" id="d1">1</div>
+    <div class="step-line" id="l1"></div>
+    <div class="step-dot" id="d2">2</div>
+    <div class="step-line" id="l2"></div>
+    <div class="step-dot" id="d3">3</div>
+    <span class="step-label" id="slbl">Origen i destí</span>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step on" id="s1">
+    <div class="card">
+      <div class="card-head">D'on a on vols viatjar?</div>
+      <div class="card-body">
+        <input type="text" id="origen" placeholder="Origen — Ex: Barcelona" />
+        <input type="text" id="destino" placeholder="Destí — Ex: Marràqueix, Japó, Israel..." />
+        <button class="btn" id="btn1" onclick="step1()">Busca el transport més ètic →</button>
+        <div id="r1"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="s2">
+    <button class="btn-ghost" onclick="goStep(1)">← Canviar destí</button>
+    <div id="r2"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="s3">
+    <button class="btn-ghost" onclick="goStep(2)">← Tornar al veredicte</button>
+    <div id="r3"></div>
+  </div>
+
+</div>
+
+<footer>Viatge Ètic · Construït amb IA · Fet a Barcelona</footer>
+
+<script>
+  const G = { origen:'', destino:'', transport:'' };
+
+  function goStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('s'+i).classList.toggle('on', i===n);
+      const d = document.getElementById('d'+i);
+      d.className = 'step-dot' + (i<n?' done':i===n?' active':'');
+      if(i<3) document.getElementById('l'+i).classList.toggle('done', i<n);
+    });
+    const labels = ['Origen i destí','Anàlisi del destí','Com viatjar èticament'];
+    document.getElementById('slbl').textContent = labels[n-1];
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  async function callAI(prompt) {
+    const res = await fetch('/api/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    if (!res.ok) throw new Error('Error del servidor: ' + res.status);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const match = data.text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('Resposta invàlida de la IA');
+    return JSON.parse(match[0]);
+  }
+
+  function showErr(el, msg) {
+    el.innerHTML = `<div class="err">Error: ${msg}. Torna-ho a intentar.</div>`;
+  }
+
+  async function step1() {
+    const origen = document.getElementById('origen').value.trim();
+    const destino = document.getElementById('destino').value.trim();
+    if (!origen || !destino) { alert('Escriu origen i destí!'); return; }
+    G.origen = origen; G.destino = destino;
+
+    const btn = document.getElementById('btn1');
+    const r = document.getElementById('r1');
+    btn.disabled = true;
+    r.innerHTML = `<div class="loading" style="padding:1.5rem 0">Analitzant opcions de transport<span class="da">.</span><span class="da">.</span><span class="da">.</span></div>`;
+
+    try {
+      const d = await callAI(`Ets expert en mobilitat sostenible i ètica del transport.
+Origen: "${origen}" → Destí: "${destino}".
+Llista les opcions de transport realistes ordenades de més a menys ètiques.
+Respon ÚNICAMENT en JSON (sense markdown):
+{"opcions":[{"nom":"Tren","badge":"Més ètic","nivell":"green","co2":"12kg CO₂","temps":"18h","desc":"raó ètica breu","millor":true},{"nom":"Avió","badge":"Menys ètic","nivell":"red","co2":"180kg CO₂","temps":"2h","desc":"impacte concret","millor":false}],"nota":"frase sobre l'impacte global d'aquest trajecte"}
+Inclou 3-4 opcions realistes. Si no hi ha alternativa a l'avió (destí llunyà), digues-ho honestament.`);
+
+      const bc = l => l==='green'?'badge-green':l==='amber'?'badge-amber':l==='red'?'badge-red':'badge-gray';
+      const best = d.opcions.find(o=>o.millor) || d.opcions[0];
+
+      r.innerHTML = `
+        <span class="slabel" style="margin-top:1.25rem">Opcions de transport — de més a menys ètic</span>
+        ${d.opcions.map(o=>`
+          <div class="transport-item ${o.millor?'best':''}">
+            <div class="transport-head">
+              <span class="transport-name">${o.nom}</span>
+              <span class="badge ${bc(o.nivell)}">${o.badge}</span>
+            </div>
+            <div class="transport-meta">
+              <span>${o.co2}</span>
+              <span>${o.temps}</span>
+            </div>
+            <div class="transport-desc">${o.desc}</div>
+          </div>`).join('')}
+        <div class="infobox">${d.nota}</div>
+        <button class="btn" onclick="step2('${best.nom.replace(/'/g,"\\'")}')">Continua: analitza el destí →</button>`;
+    } catch(e) { showErr(r, e.message); }
+    btn.disabled = false;
+  }
+
+  async function step2(transport) {
+    G.transport = transport;
+    goStep(2);
+    const r = document.getElementById('r2');
+    r.innerHTML = `<div class="loading">Analitzant conflictes i context de ${G.destino}<span class="da">.</span><span class="da">.</span><span class="da">.</span></div>`;
+
+    try {
+      const d = await callAI(`Ets expert en geopolítica, drets humans i turisme responsable.
+Destí: "${G.destino}".
+Analitza honestament si és ètic viatjar-hi ara mateix el 2025.
+Respon ÚNICAMENT en JSON (sense markdown):
+{"conflictes":[{"titol":"nom del conflicte","nivell":"alt","desc":"explicació breu i honesta"}],"pobles":["poble o col·lectiu vulnerat"],"veredicte":"si/amb_matisos/no","vtitol":"Frase directa del veredicte","vexpl":"2-3 frases honestes"}
+Sigues directe. Si hi ha guerra activa, genocidi o règim autoritari greu, digues-ho clarament. Si el país és segur i sense conflictes greus, indica-ho positivament.`);
+
+      const cc = n => n==='alt'?'high':n==='mitjà'?'med':'low';
+      const vb = v => v==='si'?'si':v==='amb_matisos'?'amb':'no';
+
+      r.innerHTML = `
+        <span class="slabel">Conflictes i situació actual</span>
+        ${d.conflictes&&d.conflictes.length ? d.conflictes.map(c=>`
+          <div class="conflict ${cc(c.nivell)}">
+            <div class="conflict-title">${c.titol}</div>
+            <div class="conflict-desc">${c.desc}</div>
+          </div>`).join('') : '<div class="infobox">No s\'han detectat conflictes greus actuals.</div>'}
+
+        ${d.pobles&&d.pobles.length&&d.pobles[0] ? `
+          <span class="slabel">Pobles i col·lectius vulnerables</span>
+          <div class="infobox">${d.pobles.join(' · ')}</div>` : ''}
+
+        <span class="slabel">Veredicte ètic</span>
+        <div class="verdict ${vb(d.veredicte)}">
+          <div class="verdict-title">${d.vtitol}</div>
+          <div class="verdict-text">${d.vexpl}</div>
+        </div>
+
+        ${d.veredicte !== 'no'
+          ? `<button class="btn" onclick="step3()">Com fer-ho de forma ètica? →</button>`
+          : `<button class="btn" onclick="window.location.reload()">Busca un altre destí →</button>`}`;
+    } catch(e) { showErr(r, e.message); }
+  }
+
+  async function step3() {
+    goStep(3);
+    const r = document.getElementById('r3');
+    r.innerHTML = `<div class="loading">Preparant la guia ètica per a ${G.destino}<span class="da">.</span><span class="da">.</span><span class="da">.</span></div>`;
+
+    try {
+      const d = await callAI(`Ets expert en turisme responsable i cultura local.
+Destí: "${G.destino}".
+Guia pràctica i concreta per viatjar-hi èticament.
+Respon ÚNICAMENT en JSON (sense markdown):
+{"cultura":[{"ok":true,"text":"norma cultural a respectar"},{"ok":false,"text":"cosa concreta a evitar"}],"allotjaments":[{"nom":"Casa rural o pensió familiar","badge":"Molt ètic","nivell":"green","rao":"per què és millor opció"},{"nom":"Airbnb / plataformes grans","badge":"Evitar","nivell":"red","rao":"per què evitar-ho específicament aquí"}],"consells":["consell pràctic 1","consell pràctic 2","consell pràctic 3"]}
+Inclou 4-5 normes culturals i 3 opcions d'allotjament. Sigues específic per a aquest destí.`);
+
+      r.innerHTML = `
+        <div class="tab-row">
+          <div class="tab on" data-panel="tc">Cultura local</div>
+          <div class="tab" data-panel="ta">Allotjament</div>
+          <div class="tab" data-panel="tk">Consells</div>
+        </div>
+
+        <div id="tc" class="panel on">
+          <span class="slabel">Normes culturals</span>
+          ${d.cultura.map(c=>`<div class="rule"><div class="rdot" style="background:${c.ok?'#2D6A4F':'#991B1B'}"></div>${c.text}</div>`).join('')}
+        </div>
+
+        <div id="ta" class="panel">
+          <span class="slabel">On allotjar-se</span>
+          ${d.allotjaments.map(a=>`
+            <div class="acc-item">
+              <div class="acc-head">
+                <span class="acc-name">${a.nom}</span>
+                <span class="badge ${a.nivell==='green'?'badge-green':a.nivell==='amber'?'badge-amber':'badge-red'}">${a.badge}</span>
+              </div>
+              <div class="acc-why">${a.rao}</div>
+            </div>`).join('')}
+        </div>
+
+        <div id="tk" class="panel">
+          <span class="slabel">Consells pràctics</span>
+          ${d.consells.map(c=>`<div class="infobox">${c}</div>`).join('')}
+        </div>
+
+        <button class="btn" style="margin-top:1rem" onclick="window.location.reload()">Analitza un altre destí →</button>`;
+
+      document.querySelectorAll('.tab').forEach(t => {
+        t.addEventListener('click', function() {
+          document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+          document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+          this.classList.add('on');
+          document.getElementById(this.dataset.panel).classList.add('on');
+        });
+      });
+    } catch(e) { showErr(r, e.message); }
+  }
+</script>
+</body>
+</html>
